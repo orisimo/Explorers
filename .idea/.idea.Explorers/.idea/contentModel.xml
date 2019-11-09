@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ContentModelStore">
+    <e p="C:\Projects\Explorers" t="IncludeRecursive">
+      <e p="Assembly-CSharp-Editor.csproj" t="IncludeRecursive" />
+      <e p="Assembly-CSharp.csproj" t="IncludeRecursive" />
+      <e p="Assets" t="Include">
+        <e p="3rd Party" t="Include">
+          <e p="XInputDotNet" t="Include">
+            <e p="Docs.txt" t="Include" />
+            <e p="Examples" t="Include">
+              <e p="XInputTestCS.cs" t="Include" />
+            </e>
+            <e p="MITLicense.txt" t="Include" />
+          </e>
+        </e>
+        <e p="DistanceTraveledUiController.cs" t="Include" />
+        <e p="Editor" t="Include">
+          <e p="ImageEditor.cs" t="Include" />
+        </e>
+        <e p="Scripts" t="Include">
+          <e p="Buildings" t="Include">
+            <e p="Building.cs" t="Include" />
+            <e p="Campfire.cs" t="Include" />
+          </e>
+          <e p="CameraController.cs" t="Include" />
+          <e p="ControllerStrings.cs" t="Include" />
+          <e p="HungerFloatValuePair.cs" t="Include" />
+          <e p="HungerState.cs" t="Include" />
+          <e p="IContainer.cs" t="Include" />
+          <e p="ICookable.cs" t="Include" />
+          <e p="IDepositable.cs" t="Include" />
+          <e p="IPlaceable.cs" t="Include" />
+          <e p="IRipenable.cs" t="Include" />
+          <e p="Items" t="Include">
+            <e p="FoodItem.cs" t="Include" />
+            <e p="GrabbableItem.cs" t="Include" />
+            <e p="IGrabbable.cs" t="Include" />
+          </e>
+          <e p="IUsable.cs" t="Include" />
+          <e p="ObjectSpawner.cs" t="Include" />
+          <e p="Plant.cs" t="Include" />
+          <e p="PlayerInputController.cs" t="Include" />
+          <e p="PlayerInputData.cs" t="Include" />
+          <e p="PlayerInteractionController.cs" t="Include" />
+          <e p="PlayerMovementController.cs" t="Include" />
+          <e p="PlayerResourceController.cs" t="Include" />
+          <e p="SimpleCameraController.cs" t="Include" />
+          <e p="Utils" t="Include">
+            <e p="ColorFill.cs" t="Include" />
+            <e p="LookAtController.cs" t="Include" />
+            <e p="TweenUtil.cs" t="Include" />
+          </e>
+        </e>
+        <e p="TextMesh Pro" t="Include">
+          <e p="Fonts" t="Include">
+            <e p="LiberationSans - OFL.txt" t="Include" />
+          </e>
+          <e p="Resources" t="Include">
+            <e p="LineBreaking Following Characters.txt" t="Include" />
+            <e p="LineBreaking Leading Characters.txt" t="Include" />
+            <e p="Shaders" t="Include">
+              <e p="TMP_Bitmap-Custom-Atlas.shader" t="Include" />
+              <e p="TMP_Bitmap-Mobile.shader" t="Include" />
+              <e p="TMP_Bitmap.shader" t="Include" />
+              <e p="TMP_SDF Overlay.shader" t="Include" />
+              <e p="TMP_SDF-Mobile Masking.shader" t="Include" />
+              <e p="TMP_SDF-Mobile Overlay.shader" t="Include" />
+              <e p="TMP_SDF-Mobile.shader" t="Include" />
+              <e p="TMP_SDF-Surface-Mobile.shader" t="Include" />
+              <e p="TMP_SDF-Surface.shader" t="Include" />
+              <e p="TMP_SDF.shader" t="Include" />
+              <e p="TMP_Sprite.shader" t="Include" />
+              <e p="TMPro.cginc" t="Include" />
+              <e p="TMPro_Properties.cginc" t="Include" />
+              <e p="TMPro_Surface.cginc" t="Include" />
+            </e>
+          </e>
+          <e p="Sprites" t="Include">
+            <e p="EmojiOne Attribution.txt" t="Include" />
+          </e>
+        </e>
+        <e p="TutorialInfo" t="Include">
+          <e p="Scripts" t="Include">
+            <e p="Editor" t="Include">
+              <e p="ReadmeEditor.cs" t="Include" />
+            </e>
+            <e p="Readme.cs" t="Include" />
+          </e>
+        </e>
+        <e p="UiController.cs" t="Include" />
+      </e>
+      <e p="Explorers.sln" t="IncludeFlat" />
+      <e p="Library" t="ExcludeRecursive" />
+      <e p="obj" t="ExcludeRecursive" />
+      <e p="packages" t="ExcludeRecursive" />
+      <e p="Temp" t="ExcludeRecursive">
+        <e p="bin" t="ExcludeRecursive" />
+      </e>
+    </e>
+    <e p="C:\Users\orco\.Rider2018.3\config\scratches" t="IncludeRecursive" />
+    <e p="C:\Users\orco\.Rider2018.3\system\extResources" t="IncludeRecursive" />
+    <e p="C:\Users\orco\.Rider2018.3\system\resharper-host\local\Transient\ReSharperHost\v183\SolutionCaches\_Explorers.-372828349.00" t="ExcludeRecursive" />
+  </component>
+</project>
