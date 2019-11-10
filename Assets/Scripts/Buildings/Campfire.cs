@@ -5,53 +5,84 @@ using UnityEngine;
 using UnityEngine.UI;
 using Utils;
 
-public class Campfire : Building, IContainer
+public class Campfire : Building, IContainer, IDepositable
 {
     [SerializeField] private int _slotCount;
-    [SerializeField] private Transform[] _itemSlotPivots;
+    [SerializeField] private ContainerSlot[] _containerSlots;
     [SerializeField] private Image[] _slotCookedPercentProgressBars;
 
-    private List<Coroutine> _pivotSnapCoroutines = new List<Coroutine>();
-    
+    public bool HasEmptySlots => DepositedItems.Count < _slotCount;
     public List<IDepositable> DepositedItems { get; set; } = new List<IDepositable>();
     
-    public bool TryDepositeItem(IDepositable itemToDeposite)
+    public void DepositeItem(IDepositable itemToDeposite)
     {
         var foodItem = itemToDeposite as FoodItem;
         
         if (foodItem == null)
         {
-            return false;
-        }
-        
-        if (DepositedItems.Count >= _slotCount)
-        {
-            return false;
+            return;
         }
 
         foodItem.Deposit(this);
         DepositedItems.Add(foodItem);
-        var slotIndex = DepositedItems.IndexOf(foodItem);
-        var snapCoroutine =
-            StartCoroutine(TweenUtil.EaseTransformToPoint(foodItem.Transform, _itemSlotPivots[slotIndex]));
-        _pivotSnapCoroutines.Add(snapCoroutine);
-
-        return true;
+        var containerSlot = GetEmptySlot();
+        foodItem.Rigidbody.isKinematic = true;
+        foodItem.Transform.position = containerSlot.Transform.position;
+        foodItem.Transform.SetParent(containerSlot.Transform);
+        containerSlot.IsEmpty = false;
     }
 
-    public bool TryWithdrawItem(IDepositable depositableToWithdraw)
+    private ContainerSlot GetEmptySlot()
+    {
+        for (var slotIndex = 0; slotIndex < _containerSlots.Length; slotIndex++)
+        {
+            var containerSlot = _containerSlots[slotIndex];
+            if (!containerSlot.IsEmpty)
+            {
+                continue;
+            }
+
+            return containerSlot;
+        }
+
+        return null;
+    }
+
+    private ContainerSlot GetGrabbableSlot(IGrabbable grabbable)
+    {
+        for (var slotIndex = 0; slotIndex < _containerSlots.Length; slotIndex++)
+        {
+            var containerSlot = _containerSlots[slotIndex];
+            if (!containerSlot.Transform == grabbable.Transform)
+            {
+                continue;
+            }
+
+            return containerSlot;
+        }
+
+        return null;
+    }
+    
+    
+    public bool TryWithdrawItem(IDepositable depositableToWithdraw, Vector3? withdrawPosition)
     {
         if (depositableToWithdraw == null)
         {
             return false;
         }
-        var slotIndex = DepositedItems.IndexOf(depositableToWithdraw);
-        var snapCoroutine = _pivotSnapCoroutines[slotIndex];
-        StopCoroutine(snapCoroutine);
-        _pivotSnapCoroutines.Remove(snapCoroutine);
 
+        var grabbable = depositableToWithdraw as IGrabbable;
+        var containerSlot = GetGrabbableSlot(grabbable);
+        
         depositableToWithdraw.Withdraw();
         DepositedItems.Remove(depositableToWithdraw);
+        
+        grabbable.Rigidbody.isKinematic = true;
+        grabbable.Transform.position = containerSlot.Transform.position;
+        grabbable.Transform.SetParent(containerSlot.Transform);
+        
+        containerSlot.IsEmpty = true;
         return true;
     }
 
@@ -66,4 +97,19 @@ public class Campfire : Building, IContainer
             _slotCookedPercentProgressBars[itemSlotIndex].fillAmount = cookableItem.CookedPercent;
         }
     }
+
+    public bool IsDeposited { get; set; }
+    public void Deposit(IContainer container)
+    {
+        IsDeposited = true;
+        Container = container;
+    }
+
+    public void Withdraw()
+    {
+        IsDeposited = false;
+        Container = null;
+    }
+
+    public IContainer Container { get; set; }
 }

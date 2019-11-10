@@ -10,15 +10,15 @@ public class Plant : MonoBehaviour, IContainer
     [SerializeField] private Transform[] _branches;
     [SerializeField] private FoodItem[] _yieldPrefabs;
     public List<IDepositable> DepositedItems { get; set; } = new List<IDepositable>();
-    
+    public bool HasEmptySlots => false;
     private FoodItem[] _foodItems;
     
-    public bool TryDepositeItem(IDepositable itemsToDeposite)
+    public void DepositeItem(IDepositable itemToDeposite)
     {
-        return false;
+        
     }
 
-    public bool TryWithdrawItem(IDepositable depositableToWithdraw)
+    public bool TryWithdrawItem(IDepositable depositableToWithdraw, Vector3? withdrawPosition)
     {
         depositableToWithdraw.Withdraw();
         DepositedItems.Remove(depositableToWithdraw);

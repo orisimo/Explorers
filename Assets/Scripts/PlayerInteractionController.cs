@@ -3,8 +3,7 @@ using Items;
 using UnityEngine;
 using Utils;
 
-[RequireComponent(typeof(PlayerInputController))]
-[RequireComponent(typeof(PlayerResourceController))]
+[RequireComponent(typeof(PlayerContext))]
 [RequireComponent(typeof(Rigidbody))]
 public class PlayerInteractionController : MonoBehaviour
 {
@@ -23,8 +22,7 @@ public class PlayerInteractionController : MonoBehaviour
     private const int OVERLAP_SPHERE_ARRAY_SIZE = 10;    
     private const float GRAB_PIVOT_SNAP_THRESHOLD = 0.1f;
     
-    private PlayerInputController _playerInputController;
-    private PlayerResourceController _playerResourceController;
+    private PlayerContext _playerContext;
     
     private Rigidbody _playerRigidbody;
     private float _initialMass;
@@ -43,8 +41,7 @@ public class PlayerInteractionController : MonoBehaviour
     {
         _playerRigidbody = GetComponent<Rigidbody>();
         _initialMass = _playerRigidbody.mass;
-        _playerInputController = GetComponent<PlayerInputController>();
-        _playerResourceController = GetComponent<PlayerResourceController>();
+        _playerContext = GetComponent<PlayerContext>();
         _grabSlots = new List<IGrabbable>();
         
     }
@@ -65,7 +62,7 @@ public class PlayerInteractionController : MonoBehaviour
 
     private void HandleDismantle()
     {
-        var buttonOneMinusDelay = _playerInputController.InputData.Button1DownDuration - _dismantleDelay;
+        var buttonOneMinusDelay = _playerContext.InputController.InputData.Button1DownDuration - _dismantleDelay;
         if (buttonOneMinusDelay < 0f)
         {
             return;
@@ -104,7 +101,7 @@ public class PlayerInteractionController : MonoBehaviour
     
     private void HandleUse()
     {
-        if (!_playerInputController.InputData.Button2Down)
+        if (!_playerContext.InputController.InputData.Button2Down)
         {
             return;
         }
@@ -133,11 +130,11 @@ public class PlayerInteractionController : MonoBehaviour
 
         if (foodItem.IsCooked)
         {
-            _playerResourceController.AddCalories(foodItem.CookedCalories);
+            _playerContext.ResourceController.AddCalories(foodItem.CookedCalories);
         }
         else
         {
-            _playerResourceController.AddCalories(foodItem.RawCalories);
+            _playerContext.ResourceController.AddCalories(foodItem.RawCalories);
         }
         ReleaseGrabbedObject(_grabSlots[0]);
         Destroy(foodItem.gameObject);
@@ -145,7 +142,7 @@ public class PlayerInteractionController : MonoBehaviour
     
     private void HandlePickup()
     {
-        if (!_playerInputController.InputData.Button1Down)
+        if (!_playerContext.InputController.InputData.Button1Down)
         {
             return;
         }
@@ -165,8 +162,8 @@ public class PlayerInteractionController : MonoBehaviour
         var isGrabbingObjects = _grabSlots.Count >= _grabSlotCount;
         if (isGrabbingObjects)
         {
-            TryPlacePlaceable();
             TryReleaseObjectsIntoBuilding(_overlapResults);
+            TryPlacePlaceable();
             ReleaseAllGrabbedObjects();
             return true;
         }
@@ -201,12 +198,14 @@ public class PlayerInteractionController : MonoBehaviour
                 var grabbable = _grabSlots[grabSlotIndex];
                 var depositable = grabbable as IDepositable;
                 if (depositable == null) continue;
-                
-                var isDeposited = containerInRange.TryDepositeItem(depositable);
-                if (isDeposited)
+
+                if (!containerInRange.HasEmptySlots)
                 {
-                    ReleaseGrabbedObject(grabbable);
+                    continue;
                 }
+                
+                ReleaseGrabbedObject(grabbable);
+                containerInRange.DepositeItem(depositable);
             }
         }
     }

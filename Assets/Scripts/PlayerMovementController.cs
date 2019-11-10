@@ -3,22 +3,28 @@ using System.Collections.Generic;
 using Items;
 using UnityEditor.UIElements;
 using UnityEngine;
+using UnityEngine.AI;
 using UnityEngine.Animations;
 using XInputDotNetPure;
-[RequireComponent(typeof(PlayerInteractionController))]
-[RequireComponent(typeof(PlayerInputController))]
+[RequireComponent(typeof(PlayerContext))]
 [RequireComponent(typeof(Rigidbody))]
 public class PlayerMovementController : MonoBehaviour
 {
     [SerializeField] private float _forceMultiplier = 100f;
     [SerializeField] private float _torqueMultiplier = 5f;
     [SerializeField] private HungerFloatValuePair[] _hungerSpeedModifierValuePairs;
+    [SerializeField] private float _fleeDistance = 15f;
 
-    public HungerState HungerState = HungerState.Full;
-    
+    public HungerState HungerState { get; set; } = HungerState.Full;
+
+    public bool IsFleeing
+    {
+        get => _isFleeing;
+    }
+
+    private bool _isFleeing;
     private Rigidbody _playerRigidbody;
-    private PlayerInteractionController _playerInteractionController;
-    private PlayerInputController _playerInputController;
+    private PlayerContext _playerContext;
 
     private readonly Dictionary<HungerState, float> _hungerSpeedModifierDictionary = new Dictionary<HungerState, float>();
     
@@ -26,12 +32,33 @@ public class PlayerMovementController : MonoBehaviour
     {
         Init();
     }
+
+    public void TrySetFleeing(Vector3 chaserPosition)
+    {
+        if (_isFleeing)
+        {
+            return;
+        }
+
+        _isFleeing = true;
+        _playerContext.NavMeshObstacle.enabled = false;
+        _playerContext.NavMeshAgent.enabled = true;
+        var vectorFromChaser = transform.position - chaserPosition;
+        var fleePosition = transform.position + vectorFromChaser.normalized * _fleeDistance;
+        _playerContext.NavMeshAgent.SetDestination(fleePosition);
+    }
+
+    private void SetNotFleeing()
+    {
+        _isFleeing = false;
+        _playerContext.NavMeshAgent.enabled = false;
+        _playerContext.NavMeshObstacle.enabled = true;
+    }
     
     private void Init()
     {
         _playerRigidbody = GetComponent<Rigidbody>();
-        _playerInteractionController = GetComponent<PlayerInteractionController>();
-        _playerInputController = GetComponent<PlayerInputController>();
+        _playerContext = GetComponent<PlayerContext>();
         
         for (var keyValuePairIndex = 0; keyValuePairIndex < _hungerSpeedModifierValuePairs.Length; keyValuePairIndex++)
         {
@@ -47,8 +74,17 @@ public class PlayerMovementController : MonoBehaviour
     
     private void HandleMovement()
     {
-        _playerRigidbody.AddForce(_playerInputController.InputData.MovementVector * _forceMultiplier * GetHungerModifier(), ForceMode.Force);
-        _playerRigidbody.AddTorque(new Vector3(0f, Vector3.SignedAngle(transform.forward, _playerInputController.InputData.MovementVector.normalized, Vector3.up) * _torqueMultiplier * Time.deltaTime, 0f), ForceMode.Force);
+        if (IsFleeing)
+        {
+            if (_playerContext.NavMeshAgent.pathStatus == NavMeshPathStatus.PathComplete &&
+                _playerContext.NavMeshAgent.remainingDistance < float.Epsilon)
+            {
+                SetNotFleeing();
+            }
+            return;
+        }
+        _playerRigidbody.AddForce(_playerContext.InputController.InputData.MovementVector * _forceMultiplier * GetHungerModifier(), ForceMode.Force);
+        _playerRigidbody.AddTorque(new Vector3(0f, Vector3.SignedAngle(transform.forward, _playerContext.InputController.InputData.MovementVector.normalized, Vector3.up) * _torqueMultiplier * Time.deltaTime, 0f), ForceMode.Force);
     }
 
     private float GetHungerModifier()

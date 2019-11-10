@@ -19,11 +19,20 @@
           <e p="ImageEditor.cs" t="Include" />
         </e>
         <e p="Scripts" t="Include">
+          <e p="AI" t="Include">
+            <e p="AIAgent.cs" t="Include" />
+            <e p="AIUtil.cs" t="Include" />
+            <e p="AnimatorParameterNames.cs" t="Include" />
+            <e p="ChaseStateBehaviour.cs" t="Include" />
+            <e p="RoamStateBehaviour.cs" t="Include" />
+          </e>
           <e p="Buildings" t="Include">
             <e p="Building.cs" t="Include" />
             <e p="Campfire.cs" t="Include" />
+            <e p="Cart.cs" t="Include" />
           </e>
           <e p="CameraController.cs" t="Include" />
+          <e p="ContainerSlot.cs" t="Include" />
           <e p="ControllerStrings.cs" t="Include" />
           <e p="HungerFloatValuePair.cs" t="Include" />
           <e p="HungerState.cs" t="Include" />
@@ -40,12 +49,15 @@
           <e p="IUsable.cs" t="Include" />
           <e p="ObjectSpawner.cs" t="Include" />
           <e p="Plant.cs" t="Include" />
+          <e p="PlayerContext.cs" t="Include" />
           <e p="PlayerInputController.cs" t="Include" />
           <e p="PlayerInputData.cs" t="Include" />
           <e p="PlayerInteractionController.cs" t="Include" />
           <e p="PlayerMovementController.cs" t="Include" />
           <e p="PlayerResourceController.cs" t="Include" />
+          <e p="PlayersManager.cs" t="Include" />
           <e p="SimpleCameraController.cs" t="Include" />
+          <e p="Singleton.cs" t="Include" />
           <e p="Utils" t="Include">
             <e p="ColorFill.cs" t="Include" />
             <e p="LookAtController.cs" t="Include" />

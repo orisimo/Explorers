@@ -1,12 +1,9 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 public class PlayerInputController : MonoBehaviour
 {
     [SerializeField] private int _playerIndex;
 
     public PlayerInputData InputData => _playerInputData;
-    
     private ControllerStrings _controllerStrings;
     private PlayerInputData _playerInputData;
     
