@@ -18,6 +18,8 @@ public class PlayerContext : MonoBehaviour
     
     public NavMeshAgent NavMeshAgent { get; private set; }
     public NavMeshObstacle NavMeshObstacle { get; private set; }
+    
+    public Rigidbody Rigidbody { get; private set; }
 
     void Awake()
     {
@@ -27,5 +29,6 @@ public class PlayerContext : MonoBehaviour
         ResourceController = GetComponent<PlayerResourceController>();
         NavMeshAgent = GetComponent<NavMeshAgent>();
         NavMeshObstacle = GetComponent<NavMeshObstacle>();
+        Rigidbody = GetComponent<Rigidbody>();
     }
 }

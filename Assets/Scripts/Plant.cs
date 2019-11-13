@@ -13,19 +13,36 @@ public class Plant : MonoBehaviour, IContainer
     public bool HasEmptySlots => false;
     private FoodItem[] _foodItems;
     
-    public void DepositeItem(IDepositable itemToDeposite)
+    public bool TryDepositItem(IDepositable itemToDeposite)
     {
-        
+        return false;
     }
 
     public bool TryWithdrawItem(IDepositable depositableToWithdraw, Vector3? withdrawPosition)
     {
         depositableToWithdraw.Withdraw();
         DepositedItems.Remove(depositableToWithdraw);
-        var grabbable = depositableToWithdraw as GrabbableItem;
+        var grabbable = depositableToWithdraw as BaseGrabbable;
         grabbable.Rigidbody.isKinematic = false;
         RemoveFoodItem(depositableToWithdraw);
         return true;
+    }
+    
+    public bool TryWithdrawFirstItem(out IDepositable withdrawnItem, Vector3? withdrawPosition = null)
+    {
+        if (DepositedItems.Count <= 0)
+        {
+            withdrawnItem = null;
+            return false;
+        }
+        withdrawnItem = DepositedItems[0];
+        if (TryWithdrawItem(withdrawnItem, withdrawPosition))
+        {
+            return true;
+        }
+        withdrawnItem = null;
+        return false;
+
     }
 
     private void Awake()

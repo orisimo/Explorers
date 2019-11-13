@@ -16,6 +16,9 @@ public class PlayerInteractionController : MonoBehaviour
     [SerializeField] private float _grabEaseModifier = 0.4f;
     [SerializeField] private int _grabSlotCount = 1;
 
+    [Header("Harvest Parameters")] [SerializeField]
+    private int _harvestRate = 30;
+
     [Header("Dismantle Parameters")] [SerializeField]
     private float _dismantleDelay = 0.5f;
 
@@ -30,8 +33,10 @@ public class PlayerInteractionController : MonoBehaviour
     
     private Collider[] _overlapResults = new Collider[OVERLAP_SPHERE_ARRAY_SIZE];
     
-    private List<IGrabbable> _grabSlots;
+    private readonly List<IGrabbable> _grabSlots = new List<IGrabbable>();
     
+    private bool IsGrabbingObjects => _grabSlots.Count > 0;
+
     private void Awake()
     {
         Init();
@@ -42,15 +47,15 @@ public class PlayerInteractionController : MonoBehaviour
         _playerRigidbody = GetComponent<Rigidbody>();
         _initialMass = _playerRigidbody.mass;
         _playerContext = GetComponent<PlayerContext>();
-        _grabSlots = new List<IGrabbable>();
-        
     }
 
     void Update()
     {
+        _overlapResults = new Collider[OVERLAP_SPHERE_ARRAY_SIZE];
         GetObjectsInRange(_overlapResults, _interactionRadius, _interactLayer);
         HandlePickup();
         HandleUse();
+        HandleHarvest();
         HandleDismantle();
     }
     
@@ -98,6 +103,15 @@ public class PlayerInteractionController : MonoBehaviour
             UpdatePlayerMass();
         }
     }
+
+    private void HandleHarvest()
+    {
+        if (_playerContext.InputController.InputData.Button2DownDuration <= 0f)
+        {
+            return;
+        }
+        TryHarvestInRange();
+    }
     
     private void HandleUse()
     {
@@ -107,14 +121,27 @@ public class PlayerInteractionController : MonoBehaviour
         }
 
         TryConsumeItem();
-        TryUseBuildingInRange();
     }
 
-    private void TryUseBuildingInRange()
+    private void TryHarvestInRange()
     {
-        
-    }
+        if (IsGrabbingObjects)
+        {
+            return;
+        }
 
+        foreach (var objectInRange in _overlapResults)
+        {
+            if (objectInRange == null) continue;
+            var harvestableInRange = objectInRange.GetComponent<IHarvestable>();
+            if (harvestableInRange == null) continue;
+            var harvestPointsDelta = Mathf.CeilToInt(_harvestRate * Time.deltaTime);
+            harvestableInRange.HarvestTick(harvestPointsDelta);
+            return;
+        }
+
+    }
+    
     private void TryConsumeItem()
     {
         if (_grabSlots.Count == 0)
@@ -197,15 +224,27 @@ public class PlayerInteractionController : MonoBehaviour
             {
                 var grabbable = _grabSlots[grabSlotIndex];
                 var depositable = grabbable as IDepositable;
-                if (depositable == null) continue;
-
+                if (depositable == null)
+                {
+                    continue;
+                }
+                var containerAsDepositable = containerInRange as IDepositable;
+                if (depositable == containerAsDepositable)
+                {
+                    continue;
+                }
                 if (!containerInRange.HasEmptySlots)
                 {
                     continue;
                 }
                 
                 ReleaseGrabbedObject(grabbable);
-                containerInRange.DepositeItem(depositable);
+                var depositedItem = containerInRange.TryDepositItem(depositable);
+                if (depositedItem &&
+                    containerInRange is IConsumer consumer)    
+                {
+                    consumer.Pay(depositable.Type);
+                }
             }
         }
     }
@@ -215,6 +254,10 @@ public class PlayerInteractionController : MonoBehaviour
         foreach (var targetObject in objects)
         {
             if (targetObject == null) break;
+            if (TryWithdrawFromContainer(targetObject))
+            {
+                break;
+            }
             if (TryGrabObject(targetObject))
             {
                 break;
@@ -224,7 +267,27 @@ public class PlayerInteractionController : MonoBehaviour
 
     private void GetObjectsInRange(Collider[] objectsInRange, float radius, LayerMask layerMask)
     {
-        Physics.OverlapSphereNonAlloc(transform.position, radius, objectsInRange, layerMask);
+        var overlapPosition = transform.position + Vector3.up * radius;
+        Physics.OverlapSphereNonAlloc(overlapPosition, radius, objectsInRange, layerMask);
+    }
+
+    private bool TryWithdrawFromContainer(Collider objectCollider)
+    {
+        var container = objectCollider.GetComponent<IContainer>();
+        if (container == null)
+        {
+            return false;
+        }
+        
+        var isWithdrawn = container.TryWithdrawFirstItem(out var withdrawnItem);
+        if (!isWithdrawn)
+        {
+            return false;
+        }
+        var withdrawnGrabbable = withdrawnItem as IGrabbable;
+        TryGrabGrabbable(withdrawnGrabbable);
+
+        return true;
     }
     
     private bool TryGrabObject(Collider objectCollider)
@@ -285,6 +348,7 @@ public class PlayerInteractionController : MonoBehaviour
     private void GrabGrabbable(IGrabbable grabbable)
     {
         _grabSlots.Add(grabbable);
+        grabbable.OnGrab(_playerContext);
         grabbable.Transform.parent = transform;
         grabbable.Rigidbody.isKinematic = true;
         grabbable.GrabCoroutine = StartCoroutine(TweenUtil.EaseTransformToPoint(grabbable.Transform, _grabPivot, _grabEaseModifier, GRAB_PIVOT_SNAP_THRESHOLD));
@@ -313,7 +377,7 @@ public class PlayerInteractionController : MonoBehaviour
             StopCoroutine(grabbedObject.GrabCoroutine);
         }
         
-        
+        grabbedObject.OnRelease();
         _grabSlots.Remove(grabbedObject);
     }
 }

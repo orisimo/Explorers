@@ -2,7 +2,7 @@
 
 namespace Items
 {
-    public class FoodItem : GrabbableItem, ICookable, IDepositable, IRipenable
+    public class FoodItem : BaseDepositable, ICookable, IRipenable
     {
         private const string BASE_COLOR_PROPERTY_NAME = "_BaseColor";
         private static readonly int BASE_COLOR_PROPERTY_ID = Shader.PropertyToID(BASE_COLOR_PROPERTY_NAME);
@@ -53,23 +53,6 @@ namespace Items
     
         public bool IsCooked => CookedPercent >= 1f;
         
-        
-        public bool IsDeposited { get; set; }
-        public IContainer Container { get; set; }
-
-        
-        public void Deposit(IContainer container)
-        {
-            IsDeposited = true;
-            Container = container;
-        }
-
-        public void Withdraw()
-        {
-            IsDeposited = false;
-            Container = null;
-        }
-
         protected override void Awake()
         {
             base.Awake();

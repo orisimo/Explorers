@@ -56,7 +56,9 @@ GameObject:
   - component: {fileID: 6375990215758500267}
   - component: {fileID: 2677134817877420957}
   - component: {fileID: 8510570217190070116}
-  m_Layer: 0
+  - component: {fileID: 4608566982105890317}
+  - component: {fileID: 3898044394434293401}
+  m_Layer: 9
   m_Name: Tree - Oak
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -125,3 +127,37 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+--- !u!114 &4608566982105890317
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7937392622353523640}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d7c25d44fc2977e40832b0b61071ccb9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _yieldType: 3
+  _yieldPercents:
+  - 0.66
+  - 0.33
+  - 0
+  _yieldSpawnRadius: 1
+  _totalHarvestPoints: 100
+  _destroyOnHarvestComplete: 1
+--- !u!136 &3898044394434293401
+CapsuleCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7937392622353523640}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 1
+  m_Enabled: 1
+  m_Radius: 2.6572208
+  m_Height: 2.8369033
+  m_Direction: 1
+  m_Center: {x: 0, y: 0, z: 2.6472845}

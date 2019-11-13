@@ -5,8 +5,10 @@ using UnityEngine;
 using UnityEngine.UI;
 using Utils;
 
-public class Campfire : Building, IContainer, IDepositable
+public class Campfire : PlacableBuilding, IContainer, IDepositable
 {
+    public ItemType Type => ItemType.Campfire;
+    
     [SerializeField] private int _slotCount;
     [SerializeField] private ContainerSlot[] _containerSlots;
     [SerializeField] private Image[] _slotCookedPercentProgressBars;
@@ -14,13 +16,13 @@ public class Campfire : Building, IContainer, IDepositable
     public bool HasEmptySlots => DepositedItems.Count < _slotCount;
     public List<IDepositable> DepositedItems { get; set; } = new List<IDepositable>();
     
-    public void DepositeItem(IDepositable itemToDeposite)
+    public bool TryDepositItem(IDepositable itemToDeposite)
     {
         var foodItem = itemToDeposite as FoodItem;
         
         if (foodItem == null)
         {
-            return;
+            return false;
         }
 
         foodItem.Deposit(this);
@@ -30,6 +32,7 @@ public class Campfire : Building, IContainer, IDepositable
         foodItem.Transform.position = containerSlot.Transform.position;
         foodItem.Transform.SetParent(containerSlot.Transform);
         containerSlot.IsEmpty = false;
+        return true;
     }
 
     private ContainerSlot GetEmptySlot()
@@ -84,6 +87,22 @@ public class Campfire : Building, IContainer, IDepositable
         
         containerSlot.IsEmpty = true;
         return true;
+    }
+
+    public bool TryWithdrawFirstItem(out IDepositable withdrawnItem, Vector3? withdrawPosition = null)
+    {
+        if (DepositedItems.Count <= 0)
+        {
+            withdrawnItem = null;
+            return false;
+        }
+        withdrawnItem = DepositedItems[0];
+        if (TryWithdrawItem(withdrawnItem, withdrawPosition))
+        {
+            return true;
+        }
+        withdrawnItem = null;
+        return false;
     }
 
     private void Update()
