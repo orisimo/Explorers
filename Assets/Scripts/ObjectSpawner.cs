@@ -12,7 +12,9 @@ public class ObjectSpawner : MonoBehaviour
     private static Collider[] _overlapResults = new Collider[1];
     private const int MAX_SPAWN_RETRIES = 5;
     private const float OVERLAP_RADIUS = 3f;
-    private int _groundlessLayerMask;
+    public int GroundLayerMask;
+    public int WaterLayerMask;
+    public int GroundlessLayerMask;
     
     [SerializeField] private PrefabDictionary _prefabDictionary = new PrefabDictionary();
     [SerializeField] private List<ObjectSpawnData> _objectQuantitiesList = new List<ObjectSpawnData>();
@@ -20,7 +22,10 @@ public class ObjectSpawner : MonoBehaviour
     private void Awake()
     {
         Instance = this;
-        _groundlessLayerMask = ~ (1 << LayerMask.NameToLayer("Ground"));
+        GroundLayerMask = 1 << LayerMask.NameToLayer("Ground");
+        WaterLayerMask = 1 << LayerMask.NameToLayer("Water");
+        GroundlessLayerMask = ~ GroundLayerMask;
+        GroundlessLayerMask ^= WaterLayerMask;
         
         foreach (var objectQuantityItem in _objectQuantitiesList)
         {
@@ -32,7 +37,16 @@ public class ObjectSpawner : MonoBehaviour
                     UnityEngine.Random.Range(-objectQuantityItem.SpawnArea.z, objectQuantityItem.SpawnArea.z)
                 );
                 randomPosition += objectQuantityItem.SpawnPosition;
-                for (int i = 0; i < MAX_SPAWN_RETRIES; i++)
+                randomPosition.y = 10f;
+                var rayCastRay = new Ray(randomPosition, Vector3.down);
+                var result = new RaycastHit[1];
+                if (Physics.RaycastNonAlloc(rayCastRay, result, 30f, GroundLayerMask) <= 0)
+                {
+                    continue;
+                }
+                
+                randomPosition.y = result[0].point.y;
+                for (var i = 0; i < MAX_SPAWN_RETRIES; i++)
                 {
                     if (SpawnItemByType(objectQuantityItem.SpawnType, randomPosition, Quaternion.Euler(objectQuantityItem.EulerRotation), null, false))
                     {
@@ -53,7 +67,7 @@ public class ObjectSpawner : MonoBehaviour
         _overlapResults[0] = null;
         if(!ignoreRaycast)
         {
-            Physics.OverlapSphereNonAlloc(spawnPosition, OVERLAP_RADIUS, _overlapResults, _groundlessLayerMask);
+            Physics.OverlapSphereNonAlloc(spawnPosition, OVERLAP_RADIUS, _overlapResults, GroundlessLayerMask);
             if (_overlapResults[0])
             {
                 return false;

@@ -16,12 +16,12 @@ public class PlacableBuilding : MonoBehaviour, IPlaceable, IGrabbable
     public Coroutine GrabCoroutine { get; set; }
     public void OnGrab(PlayerContext grabbingPlayerContext)
     {
-        
+        _collider.enabled = false;
     }
 
     public void OnRelease()
     {
-        
+        _collider.enabled = true;
     }
 
     public float UnpackDuration => _unpackDuration;
@@ -48,8 +48,11 @@ public class PlacableBuilding : MonoBehaviour, IPlaceable, IGrabbable
     {
         transform.SetParent(null);
         
-        var currentPosition = transform.position;
-        currentPosition.y = 0f;
+        var currentPosition = Transform.position;
+        var rayCastRay = new Ray(currentPosition, Vector3.down);
+        var result = new RaycastHit[1];
+        Physics.RaycastNonAlloc(rayCastRay, result, 10f, ObjectSpawner.Instance.GroundLayerMask);
+        currentPosition.y = result[0].point.y;
         transform.position = currentPosition;
         Collider.enabled = true;
         

@@ -121,10 +121,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 200e63f9f91eabb44914000cca00ed8b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _type: 1
+  _renderer: {fileID: 0}
   _ripenDuration: 30
+  _ripeScaleMinMax: {x: 0.3, y: 1}
   _cookDuration: 10
   _rawCalories: 10
   _cookedCalories: 20
-  _renderer: {fileID: 0}
   _rawColor: {r: 0.002535928, g: 0.6981132, b: 0, a: 1}
   _cookedColor: {r: 1, g: 0.5499269, b: 0.21226418, a: 1}

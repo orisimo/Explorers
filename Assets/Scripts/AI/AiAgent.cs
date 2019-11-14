@@ -12,7 +12,11 @@ public class AiAgent : MonoBehaviour
 
     public NavMeshAgent NavMeshAgent => _navMeshAgent;
 
+    public PlayerContext HiringPlayer => _hiringPlayer;
+    public Vector3 FleeFromPosition;
+
     private NavMeshAgent _navMeshAgent;
+    private PlayerContext _hiringPlayer;
 
     public bool IsAtDestination =>
         NavMeshAgent.pathStatus == NavMeshPathStatus.PathComplete &&
@@ -22,5 +26,11 @@ public class AiAgent : MonoBehaviour
     {
         _navMeshAgent = GetComponent<NavMeshAgent>();
         _navMeshAgent.Warp(transform.position);
+    }
+
+    public void SetHiringPlayer(PlayerContext hiringPlayer)
+    {
+        _hiringPlayer = hiringPlayer;
+        _hiringPlayer.InteractionController.HasBodyGuard = true;
     }
 }

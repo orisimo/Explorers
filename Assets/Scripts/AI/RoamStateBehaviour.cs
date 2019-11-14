@@ -12,7 +12,7 @@ public class RoamStateBehaviour : StateMachineBehaviour
     private Vector3 _roamPosition;
     private Vector3? _guardPosition;
     
-    public override void OnStateEnter(Animator animator, AnimatorStateInfo animatorStateInfo, int layerIndex)
+    public override void OnStateEnter(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
     {
         _aiAgent = animator.GetComponent<AiAgent>();
         UpdateRoamPosition();
@@ -20,6 +20,7 @@ public class RoamStateBehaviour : StateMachineBehaviour
 
     public override void OnStateUpdate(Animator animator, AnimatorStateInfo animatorStateInfo, int layerIndex)
     {
+        base.OnStateUpdate(animator, animatorStateInfo, layerIndex);
         var isPlayerInRadius = AiUtil.Instance.IsPlayerInRadius(animator.transform.position, _aiAgent.SightRadius);
         animator.SetBool(AnimatorParameterNames.PLAYER_IN_RADIUS_BOOL, isPlayerInRadius);
         HandleRoam();

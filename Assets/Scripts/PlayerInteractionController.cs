@@ -35,7 +35,8 @@ public class PlayerInteractionController : MonoBehaviour
     
     private readonly List<IGrabbable> _grabSlots = new List<IGrabbable>();
     
-    private bool IsGrabbingObjects => _grabSlots.Count > 0;
+    public bool IsGrabbingObjects => _grabSlots.Count > 0;
+    public bool HasBodyGuard;
 
     private void Awake()
     {
@@ -123,6 +124,25 @@ public class PlayerInteractionController : MonoBehaviour
         TryConsumeItem();
     }
 
+    public bool TryGiveItem(ItemType itemType)
+    {
+        for (var slotIndex = 0; slotIndex < _grabSlots.Count; slotIndex++)
+        {
+            var grabSlot = _grabSlots[slotIndex];
+            if (!(grabSlot is IDepositable depositable) || 
+                depositable.Type != itemType)
+            {
+                continue;
+            }
+            
+            ReleaseGrabbedObject(grabSlot);
+            Destroy(grabSlot.Transform.gameObject);
+            return true;
+        }
+
+        return false;
+    }
+    
     private void TryHarvestInRange()
     {
         if (IsGrabbingObjects)
@@ -354,7 +374,7 @@ public class PlayerInteractionController : MonoBehaviour
         grabbable.GrabCoroutine = StartCoroutine(TweenUtil.EaseTransformToPoint(grabbable.Transform, _grabPivot, _grabEaseModifier, GRAB_PIVOT_SNAP_THRESHOLD));
     }
 
-    private void ReleaseAllGrabbedObjects()
+    public void ReleaseAllGrabbedObjects()
     {
         for (var grabSlotIndex = _grabSlots.Count-1; grabSlotIndex >= 0; grabSlotIndex--)
         {

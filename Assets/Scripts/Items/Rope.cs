@@ -5,6 +5,7 @@ namespace Items
     public class Rope : BaseGrabbable
     {
         [SerializeField] private Joint _jointToAttachTo;
+        [SerializeField] private VehicleMovementController _vehicleMovementController;
 
         private Vector3 _initialLocalPosition;
 
@@ -19,6 +20,7 @@ namespace Items
             base.OnGrab(grabbingPlayerContext);
             
             _jointToAttachTo.connectedBody = grabbingPlayerContext.Rigidbody;
+            _vehicleMovementController.SetBreaks(false);
         }
 
         public override void OnRelease()
@@ -27,6 +29,7 @@ namespace Items
             transform.SetParent(_jointToAttachTo.transform);
             transform.localPosition = _initialLocalPosition;
             _jointToAttachTo.connectedBody = Rigidbody;
+            _vehicleMovementController.SetBreaks(true);
         }
         
     }

@@ -1,12 +1,11 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
 public class UiController : MonoBehaviour
 {
     [SerializeField] private Transform[] _playerTransforms;
     [SerializeField] private GameObject[] _viewBubbleGameObjects;
-    [SerializeField, Tooltip("How much buffer, in percent of screen, to add before toggling HUD visibility")] private float _frustumMargin = 0.1f;
+    [SerializeField, Range(0f, 0.5f), Tooltip("How much buffer, in percent of screen, to add before toggling HUD visibility")] private float _frustumMargin = 0.1f;
+    [SerializeField, Range(-0.25f, 0.25f)] private float _frustumOffset = 0.1f;
     [SerializeField] private Camera _mainCamera;
 
     void Update()
@@ -25,10 +24,10 @@ public class UiController : MonoBehaviour
         var playerScreenPoint = _mainCamera.WorldToScreenPoint(playerTransform.position);
         playerScreenPoint.x = playerScreenPoint.x / Screen.width;
         playerScreenPoint.y = playerScreenPoint.y / Screen.height;
-        var leftPosition = -(playerScreenPoint.x + _frustumMargin) / _frustumMargin;
-        var rightPosition = -(1f - playerScreenPoint.x  + _frustumMargin) / _frustumMargin; ;
-        var bottomPosition = -(playerScreenPoint.y + _frustumMargin) / _frustumMargin;
-        var topPosition = -(1f - playerScreenPoint.y + _frustumMargin) / _frustumMargin;
+        var leftPosition = -(playerScreenPoint.x + _frustumOffset) / _frustumMargin;
+        var rightPosition = -(1f - playerScreenPoint.x  + _frustumOffset) / _frustumMargin; ;
+        var bottomPosition = -(playerScreenPoint.y + _frustumOffset) / _frustumMargin;
+        var topPosition = -(1f - playerScreenPoint.y + _frustumOffset) / _frustumMargin;
         var distanceFromBorder = Mathf.Clamp01(Mathf.Max(leftPosition, rightPosition, bottomPosition, topPosition));
         viewBubble.transform.localScale = Vector3.one * distanceFromBorder;
     }

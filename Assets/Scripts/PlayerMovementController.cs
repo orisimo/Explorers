@@ -46,6 +46,7 @@ public class PlayerMovementController : MonoBehaviour
         var vectorFromChaser = transform.position - chaserPosition;
         var fleePosition = transform.position + vectorFromChaser.normalized * _fleeDistance;
         _playerContext.NavMeshAgent.SetDestination(fleePosition);
+        _playerContext.InteractionController.ReleaseAllGrabbedObjects();
     }
 
     private void SetNotFleeing()

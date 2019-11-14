@@ -48,6 +48,8 @@
             <e p="AIUtil.cs" t="Include" />
             <e p="AnimatorParameterNames.cs" t="Include" />
             <e p="ChaseStateBehaviour.cs" t="Include" />
+            <e p="FleeStateBehaviour.cs" t="Include" />
+            <e p="HiredStateBehaviour.cs" t="Include" />
             <e p="RoamStateBehaviour.cs" t="Include" />
           </e>
           <e p="BaseDepositable.cs" t="Include" />
@@ -95,6 +97,7 @@
             <e p="MathUtil.cs" t="Include" />
             <e p="TweenUtil.cs" t="Include" />
           </e>
+          <e p="VehicleMovementController.cs" t="Include" />
         </e>
         <e p="TextMesh Pro" t="Include">
           <e p="Fonts" t="Include">
